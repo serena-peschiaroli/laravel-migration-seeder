@@ -6,6 +6,7 @@ use App\Models\Train;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Faker\Generator as Faker;
+use Carbon\Carbon;
 
 class TrainsTableSeeder extends Seeder
 {
@@ -16,8 +17,43 @@ class TrainsTableSeeder extends Seeder
      */
     public function run(Faker $faker)
     {
-        for($i=0; $i < 50; $i++) {
+        $stazioni= [ 'Bari C.le','Bologna Centrale','Roma Termini', 'Milano Centrale', 'Venezia S. Lucia', 'Napoli P.zza Garibaldi', 'Reggio Calabria Centrale', 'Firenze S. M. Novella'];
+        for($i=0; $i < 40; $i++) {
+            $trains = new Train();
+            $trains->azienda = $faker->randomElement(['Trenitalia', 'Italo', 'Compagnia Ferroviaria Italiana Srl', 'Trenord']);
+            $trains->stazione_di_partenza = $faker->randomElement($stazioni);
+            //stazione di arrivo deve essere differente da partenza
+            do {
+                $trains->stazione_di_arrivo = $faker->randomElement($stazioni);
+            } while ($trains->stazione_di_arrivo == $trains->stazione_di_partenza);
+
+            // $trains->data_di_partenza = $faker->dateTimeBetween('+0 days', '+3weeks')->format('Y-m-d');
+            // $trains->orario_di_parteza= $faker->time();
+
+            //generare orario e data di partnza e arrivo usando carbon
+            $partenzaDataOra = Carbon::instance($faker->dateTimeBetween('+0 days', '+3 weeks'));
+            $trains->data_di_partenza = $partenzaDataOra->format('Y-m-d');
+            $trains->orario_di_partenza = $partenzaDataOra->format('H:i:s');
+
+            // calcolo arrivo 
+            $arrivoDataOra = (clone $partenzaDataOra)->addHours(rand(1, 6));
+            $trains->data_di_arrivo = $arrivoDataOra->format('Y-m-d');
+            $trains->orario_di_arrivo = $arrivoDataOra->format('H:i:s');
+
             
+
+            // $orario_arrivo= (clone $orario_partenza)->addHours(rand(1,6));
+            // $trains->orario_di_partenza = $orario_partenza->format('H:i:s');
+
+            // $trains->data_di_arrivo = $trains->data_di_partenza;
+            // $trains->orario_di_arrivo = $faker->time();
+            // $trains->orario_di_arrivo = $orario_arrivo->format('H:i:s');
+            $trains->codice_treno=$faker->numberBetween(1, 1000);
+            $trains->carrozza_numero = $faker->numberBetween(1, 12);
+            $trains->save();
+
+
+
         }
     }
 }
