@@ -11,7 +11,7 @@ class HomeController extends Controller
     public function index() {
         $currentDate = now()->toDateString();
         $trains = Train::whereDate('data_di_partenza', '=', $currentDate)->get();
-        dd($trains, $currentDate);
+        // dd($trains, $currentDate);
         return view('home', compact('trains'));
     }
 }
